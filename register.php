@@ -1,4 +1,5 @@
 <?php
+
 $errmessage = array();
 
 if ($_POST) {
@@ -8,7 +9,7 @@ if ($_POST) {
     if (!$_POST['e']) {
         $errmessage[] = "이메일을 입력해주세요";
     } else if (strlen($_POST['e']) > 200 || !filter_var($_POST['e'], FILTER_VALIDATE_EMAIL)) {
-        $errmessage[] = "올바른 이메일 형식으로 200자 이내로 입력해주세요";
+        $errmessage[] = "200자 이내로 입력해주세요";
     }
 
     // 패스워드 공란, 글자수100
@@ -23,14 +24,26 @@ if ($_POST) {
         $errmessage[] = "패스워드가 일치하지 않습니다";
     }
 
-    // TODO 2. 신규유저 등록
+
+
+
+    // 2. 신규유저 등록ㅉ
+    $userfile = '../userinfo.txt';
+    if (!$errmessage) {
+        $ph = password_hash($_POST['p'], PASSWORD_DEFAULT);
+        $line = '"' . $_POST['e'] . '","' . $ph . '"' . "\n";
+        $ret = file_put_contents($userfile, $line, FILE_APPEND);
+    }
     // 3. 로그인 화면으로 리다이렉트
     if ($errmessage) {
-        // Display errors on the same page
+        // Handle errors if needed
     } else {
-        // TODO: Implement user registration logic
+        $_POST['e'] = '';
+        header("Location: /login.php");
+        exit;
     }
 }
+
 ?>
 
 
@@ -68,7 +81,7 @@ if ($errmessage) {
           <input
             type="email"
             name="e"
-            value=""
+            value = ""
             class="form-control form-control-lg"
           /><br />
           패스워드

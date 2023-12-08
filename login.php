@@ -2,18 +2,38 @@
 if( $_POST){
  //POST 정보가 있을 때
  // TODO 1.  입력 체크
- // TODO 2. 로그인 ID와 패스워드가 일치하는지 체크
- //3. 로그인 후 화면으로 리다이렉트
-$host = $_SERVER['HTTP_HOST'];
-$uri = rtrim(dirname($_SERVER['PHP_SELF']), charlist:'/\\');
-header(string:"Location: //$host$uri/memberonly.php");
-exit;
+ if( !$_POST['e']){
+  $errmessage[] = "이메일을 입력해주세요";
+ } else if (strlen($_POST['e']) > 200 || !filter_var($_POST['e'], FILTER_VALIDATE_EMAIL)) {
+  $errmessage[] = "200자 이내로 입력해주세요";
+}
+
+if (!$_POST['p']) {
+  $errmessage[] = "패스워드를 입력해주세요";
+} else if (strlen($_POST['p']) > 100) {
+  $errmessage[] = "100자 이내로 입력해주세요";
+}
+
+ //2. 로그인 ID와 패스워드가 일치하는지 체크
+$userfile = '../userinfo.txt';
+ $users = file_get_contents( $userfile);
+ $users = explode("\n", $users);
+ foreach ($users as $k => $v) {
+  $v_ary = str_getcsv($v);
+  if ( $v_ary[0] == $_POST['e']){
+    if (password_verify($_POST['p'], $v_ary[1])){
+
+      header("Location: /memberonly.php");
+      exit;
 } 
 
-else{
+    }
+  }
+ }
 
+ $errmessage[] = "유저명 또는 패스워드가 틀렸습니다"
+ //3. 로그인 후 화면으로 리다이렉트
 
-}
 ?>
 
 <!DOCTYPE html>
